@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEGANOGRAPHY</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>STEGANOGRAPHY</h2>
+        <p>Image Steganography</p>
+
+        <label>Upload Image</label>
+        <input type="file" id="imageInput" accept="image/*">
+
+        <label>Secret Character</label>
+        <input type="text" id="charInput" maxlength="1" placeholder="A">
+
+        <button id="hideBtn">Hide</button>
+        <button id="revealBtn">Reveal</button>
+
+        <div class="result">
+            Output:
+            <span id="outputChar">-</span>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+        <h3>Image Workspace</h3>
+        <canvas id="canvas"></canvas>
+        <p class="note">
+            Image stays in color while uploading.<br>
+            Converts to grayscale only during processing.
+        </p>
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

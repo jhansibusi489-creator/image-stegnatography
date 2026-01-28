@@ -1,0 +1,94 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eaeaea;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #1f2933;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 22px;
+}
+
+.sidebar p {
+    font-size: 13px;
+    color: #bbb;
+    margin-bottom: 25px;
+}
+
+.sidebar label {
+    display: block;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.sidebar input {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    border-radius: 3px;
+    border: none;
+}
+
+.sidebar button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 8px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.sidebar button:hover {
+    background: #2563eb;
+}
+
+.result {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.result span {
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Workspace */
+.workspace {
+    flex: 1;
+    padding: 30px;
+    background: #f9fafb;
+}
+
+.workspace h3 {
+    margin-top: 0;
+}
+
+canvas {
+    border: 1px solid #999;
+    width: 128px;
+    height: 128px;
+    background: white;
+}
+
+.note {
+    font-size: 13px;
+    color: #555;
+    margin-top: 10px;
+}
