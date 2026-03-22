@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Integrity Checker</title>
+
+<!-- CryptoJS Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* Glass Cards */
+.box {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* Textarea */
+textarea {
+  width: 100%;
+  height: 90px;
+  border-radius: 10px;
+  border: none;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 14px;
+  outline: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* Dropdown */
+select {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* Buttons */
+button {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Generate - Green */
+.generate-btn {
+  background: linear-gradient(135deg, #00c853, #009624);
+  color: white;
+}
+
+.generate-btn:hover {
+  box-shadow: 0 0 15px #00e676;
+  transform: scale(1.05);
+}
+
+/* Send - Blue */
+.send-btn {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+}
+
+.send-btn:hover {
+  box-shadow: 0 0 15px #00c6ff;
+  transform: scale(1.05);
+}
+
+/* Intercept - Red (special) */
+.intercept-btn {
+  background: linear-gradient(135deg, #ff416c, #ff0000);
+  color: white;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.intercept-btn:hover {
+  box-shadow: 0 0 15px #ff4d4d;
+  transform: scale(1.08);
+}
+
+/* Verify - Purple */
+.verify-btn {
+  background: linear-gradient(135deg, #8e2de2, #4a00e0);
+  color: white;
+}
+
+.verify-btn:hover {
+  box-shadow: 0 0 15px #a066ff;
+  transform: scale(1.05);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00c6ff;
+}
+
+/* Digest Box */
+#digest {
+ #digest {
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  padding: 14px;
+  margin-top: 12px;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #00ffcc;
+  word-break: break-all;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 10px rgba(0,255,204,0.4);
+}
+}
+
+/* Result */
+.result {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.success {
+  color: #00ffcc;
+}
+
+.fail {
+  color: #ff4d6d;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🔐 Message Digest</h1>
+
+  <!-- Sender -->
+  <div class="box">
+    <h2>📤 Sender</h2>
+
+    <textarea id="msg" placeholder="Enter message"></textarea>
+
+    <select id="algo">
+      <option value="MD5">MD5</option>
+      <option value="SHA1">SHA-1</option>
+    </select>
+
+    <br>
+    <button class="generate-btn" onclick="generate()">Generate Digest</button>
+
+    <button class="send-btn" onclick="sendToReceiver()">Send to Receiver</button>
+
+    
+
+    <p><b>Digest:</b></p>
+    <div id="digest"></div>
+  </div>
+  <button class="intercept-btn" onclick="intercept()">⚠️ Intercept & Modify</button>
+  <!-- Receiver -->
+  <div class="box">
+    <h2>📥 Receiver</h2>
+
+    <textarea id="recv"></textarea>
+
+    <br>
+   <button class="verify-btn" onclick="verify()">Verify Integrity</button>
+    
+    <div id="result" class="result"></div>
+  </div>
+</div>
+
+<script>
+
+let storedMessage = "";
+let storedHash = "";
+
+// Generate only digest
+function generate() {
+  const msg = document.getElementById("msg").value;
+  const algo = document.getElementById("algo").value;
+
+  if (!msg) {
+    alert("Enter message");
+    return;
+  }
+
+  let hash;
+
+  if (algo === "MD5") {
+    hash = CryptoJS.MD5(msg).toString();
+  } else {
+    hash = CryptoJS.SHA1(msg).toString();
+  }
+
+  // Store internally
+  storedMessage = msg;
+  storedHash = hash;
+
+  // Show only digest
+  document.getElementById("digest").innerText = hash;
+}
+
+
+// Send separately
+function sendToReceiver() {
+  if (!storedMessage || !storedHash) {
+    alert("Generate digest first!");
+    return;
+  }
+
+  document.getElementById("recv").value =
+    storedMessage + "||" + storedHash;
+}
+function intercept() {
+  let data = document.getElementById("recv").value;
+
+  if (!data) {
+    alert("Send message first!");
+    return;
+  }
+
+  let parts = data.split("||");
+
+  if (parts.length !== 2) {
+    alert("Invalid format");
+    return;
+  }
+
+  let msg = parts[0];
+  let hash = parts[1];
+
+  // User choice
+  let choice = prompt(
+    "Enter option:\n1 - Modify Message\n2 - Modify Digest\n3 - Modify Both"
+  );
+
+  if (choice === "1") {
+    msg = msg + "_hacked";
+  } 
+  else if (choice === "2") {
+    hash = hash.slice(0, -2) + "xx";
+  } 
+  else if (choice === "3") {
+    msg = msg + "_hacked";
+    hash = hash.slice(0, -2) + "yy";
+  } 
+  else {
+    alert("Invalid choice");
+    return;
+  }
+
+  document.getElementById("recv").value = msg + "||" + hash;
+}
+
+
+// Verify with detailed output
+function verify() {
+  const data = document.getElementById("recv").value;
+  const algo = document.getElementById("algo").value;
+
+  const parts = data.split("||");
+
+  if (parts.length !== 2) {
+    alert("Invalid format");
+    return;
+  }
+
+  const receivedMsg = parts[0];
+  const receivedHash = parts[1];
+
+  let newHash;
+
+  if (algo === "MD5") {
+    newHash = CryptoJS.MD5(receivedMsg).toString();
+  } else {
+    newHash = CryptoJS.SHA1(receivedMsg).toString();
+  }
+
+  const result = document.getElementById("result");
+
+  // Show messages (same UI you already improved)
+  result.innerHTML = `
+    <div style="background: rgba(255,255,255,0.08); padding:12px; border-radius:10px; margin-top:10px;">
+      <p style="color:#00ffcc;"><b>Original Message:</b></p>
+      <p>${storedMessage}</p>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.08); padding:12px; border-radius:10px; margin-top:10px;">
+      <p style="color:#ffd369;"><b>Received Message:</b></p>
+      <p>${receivedMsg}</p>
+    </div>
+  `;
+
+  // 🔥 CONDITIONS
+  if (receivedMsg === storedMessage && receivedHash === storedHash) {
+    result.innerHTML += `<p class="success">✅ Message Successful</p>`;
+  } 
+  else if (receivedMsg !== storedMessage && receivedHash === storedHash) {
+    result.innerHTML += `<p class="fail">❌ Message Modified</p>`;
+  } 
+  else if (receivedMsg === storedMessage && receivedHash !== storedHash) {
+    result.innerHTML += `<p style="color:orange;">⚠️ Digest Modified</p>`;
+  } 
+  else {
+    result.innerHTML += `<p class="fail">❌ Message & Digest Both Modified</p>`;
+  }
+}
+  // Detailed output
+  result.innerHTML = `
+  <div style="
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+  ">
+    <p style="margin:5px 0; color:#00ffcc;"><b>Original Message:</b></p>
+    <p style="margin:5px 0;">${storedMessage}</p>
+  </div>
+
+  <div style="
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+  ">
+    <p style="margin:5px 0; color:#ffd369;"><b>Received Message:</b></p>
+    <p style="margin:5px 0;">${receivedMsg}</p>
+  </div>
+`;
+
+  if (newHash === receivedHash) {
+    result.innerHTML += `<p class="success">✅ Message Not Modified</p>`;
+  } else {
+    result.innerHTML += `<p class="fail">❌ Message Modified!</p>`;
+  }
+
+</script>
+
+</body>
+</html>
